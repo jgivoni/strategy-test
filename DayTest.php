@@ -15,7 +15,7 @@ class DayTest extends AbstractTest {
 	 * 
 	 * @param array $weightingRules
 	 * @param int $visits
-	 * @return \DayTestResult
+	 * @return \DayTestResults
 	 */
 	 public function getResults($weightingRules, $visits) {
 		 $conditions = new VisitTestConditions();
