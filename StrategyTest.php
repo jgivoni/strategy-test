@@ -30,6 +30,7 @@ class StrategyTest extends AbstractTest
         $test = new PeriodTest($conditions);
         $results = new StrategyTestResults();
         for ($iteration = 0; $iteration < $iterations; $iteration++) {
+            echo "Running test " . ($iteration+1) . " of $iterations   \r";
             $results->addPeriodResults($test->getResults($this->_conditions->daysPerPeriod));
         }
         return $results;

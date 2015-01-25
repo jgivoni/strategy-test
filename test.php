@@ -8,18 +8,23 @@ require_once 'pl.php';
 
 require_once 'strategies/AbStrategy.php';
 require_once 'strategies/MyStrategy.php';
+require_once 'strategies/BanditCrStrategy.php';
 require_once 'StrategyTest.php';
 require_once 'StrategyTestConditions.php';
 
+//$strategy = new AbStrategy();
+$strategy = new MyStrategy();
+//$strategy = new BanditCrStrategy();
 $conditions = new StrategyTestConditions();
 $conditions->experiences = [
     'A' => new Experience(0.03, 0.01, 1),
     'B' => new Experience(0.031, 0.02, 1.1),
 ];
 $conditions->daysPerPeriod = 30;
-$conditions->visitsPerDay = 100;
-$test = new StrategyTest($conditions);
+$conditions->visitsPerDay = 1000;
 $iterations = 10;
-$results = $test->getResults(new MyStrategy(), $iterations);
+$test = new StrategyTest($conditions);
+$results = $test->getResults($strategy, $iterations);
 
+echo "\n";
 echo pl('Avg. total revenue', $results->getAvgRevenue(), $conditions->getBaselineRevenue(), $conditions->getBestRevenue());

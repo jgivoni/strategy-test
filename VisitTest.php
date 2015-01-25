@@ -23,8 +23,10 @@ class VisitTest extends AbstractTest
     public function getResults()
     {
         // Pick a random experience depending on weights
-        $experience = $this->pickExperience();
+        $experienceKey = $this->pickExperienceKey();
         $results = new VisitTestResults();
+        $results->experienceKey = $experienceKey;
+        $experience = $this->_conditions->experiences[$experienceKey];
         $results->conversion = $this->isSimulatedConversion($experience);
         $results->xSales = $this->getSimulatedXSales($experience, $results->conversion);
         $results->revenue = $this->getSimulatedRevenue($experience, $results->conversion, $results->xSales);
@@ -34,16 +36,16 @@ class VisitTest extends AbstractTest
 
     /**
      * 
-     * @return Experience
+     * @return string
      */
-    protected function pickExperience()
+    protected function pickExperienceKey()
     {
         $weightingRules = $this->_conditions->weightingRules;
         $pick = (float) mt_rand() / (float) mt_getrandmax() * (float) array_sum($weightingRules);
         foreach ($weightingRules as $key => $weight) {
             $pick = $pick - $weight;
             if ($pick <= 0) {
-                return $this->_conditions->experiences[$key];
+                return $key;
             }
         }
     }

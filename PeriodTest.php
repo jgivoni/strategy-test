@@ -28,6 +28,7 @@ class PeriodTest extends AbstractTest
         $results = new PeriodTestResults($conditions->experiences);
         $weightingRules = $this->getInitialWeightingRules($conditions->experiences);
         for ($day = 0; $day < $days; $day++) {
+            echo "\t\t\tRunning day " . ($day+1) . " of $days   \r";
             $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
             $weightingRules = $this->getAdjustedWeightingRules($results, $day);
         }
