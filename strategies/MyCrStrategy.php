@@ -8,7 +8,7 @@
 
 require_once 'strategies/Strategy.php';
 
-class MyStrategy extends Strategy
+class MyCrStrategy extends Strategy
 {
     public $name = 'Custom 80% to optimal';
     
@@ -25,7 +25,7 @@ class MyStrategy extends Strategy
         $experiences = count($visits);
         $highCr = 0;
         foreach ($conversions as $i => $c) {
-            $cr = (float) $c / (float) $visits[$i];
+            $cr = $visits[$i] > 0 ? (float) $c / (float) $visits[$i] : 0;
             if ($cr >= $highCr) {
                 $highCr = $cr;
                 $winI = $i;

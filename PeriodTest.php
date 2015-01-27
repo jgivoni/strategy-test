@@ -22,7 +22,7 @@ class PeriodTest extends AbstractTest
      */
     public function getResults($days)
     {
-        $conditions = new PeriodTestConditions();
+        $conditions = new PeriodTestConditions($this->_conditions->key);
         $conditions->experiences = $this->_conditions->experiences;
         $test = new DayTest($conditions);
         $results = new PeriodTestResults($conditions->experiences);
@@ -31,7 +31,22 @@ class PeriodTest extends AbstractTest
             echo "\t\t\tRunning day " . ($day+1) . " of $days   \r";
             $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
             $weightingRules = $this->getAdjustedWeightingRules($results, $day);
+            $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n",
+                $day, $results->visits, $results->conversions, $results->revenue));
+            foreach ($results->experiencesResults as $key => $e) {
+                $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\tNew weight: %d \n",
+                    $e->visits, $e->conversions, $e->revenue, $weightingRules[$key]));
+            }
+            $this->log("-\n");
         }
+        $bestWeight = 0;
+        foreach ($weightingRules as $key => $weight) {
+            if ($weight > $bestWeight) {
+                $bestWeight = $weight;
+                $winnerKey = $key;
+            }
+        }
+        $results->winner = $winnerKey;
         return $results;
     }
 

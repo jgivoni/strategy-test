@@ -8,7 +8,7 @@
 function pl($what, $number, $baseline, $best)
 {
     $devation = ((float) $number - (float) $baseline) * 100 / (float) $baseline;
-    $optimal = ((float) $number - (float) $baseline) * 100 / ((float) $best - (float) $baseline);
+    $optimal = $best != $baseline ? ((float) $number - (float) $baseline) * 100 / ((float) $best - (float) $baseline) : 100;
     $numberFormatted = number_format($number, 2);
     $deviationFormatted = number_format($devation, 2);
     $optimalFormatted = number_format($optimal);

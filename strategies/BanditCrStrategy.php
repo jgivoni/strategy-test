@@ -10,15 +10,16 @@ require_once 'strategies/Strategy.php';
 
 class BanditCrStrategy extends Strategy
 {
+    public $name = 'Binomial bandit on CR';
+    
     public function getWeights($visits, $conversions, $xSales, $revenue)
     {
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .
             "successes=c(" . implode(',', $conversions) . "); " .
             "best_binomial_bandit(successes,trials)";
-        $output = [];
-        exec("R -e '{$rCommand}' --slave", $output);
-        $weights = array_slice(explode(' ', $output[0]), 1);
+        $r = new RAdapter();
+        $weights = $r->execute($rCommand)[0];
         return array_map(function($weight) {
             return (float) $weight * 10000;
         }, $weights);

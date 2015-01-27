@@ -40,6 +40,12 @@ class PeriodTestResults
      * @var float
      */
     public $revenue;
+    
+    /**
+     * Key of the winning experience by the end of the period
+     * @var string
+     */
+    public $winner;
 
     /**
      * Initialises a new period test results
@@ -69,6 +75,16 @@ class PeriodTestResults
         foreach ($results->experiencesResults as $key => $subresults) {
             $this->experiencesResults[$key]->addDayResults($subresults);
         }
+        return $this;
+    }
+
+    /**
+     * Cleans up the results by summarizing the subresults
+     * and then removing them to save space
+     */
+    public function collapse()
+    {
+       // @todo 
         return $this;
     }
 
