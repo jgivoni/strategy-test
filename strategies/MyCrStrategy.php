@@ -23,20 +23,25 @@ class MyCrStrategy extends Strategy
     public function getWeights($visits, $conversions, $xSales, $revenue)
     {
         $experiences = count($visits);
+        $highGroup = [];
         $highCr = 0;
         foreach ($conversions as $i => $c) {
             $cr = $visits[$i] > 0 ? (float) $c / (float) $visits[$i] : 0;
-            if ($cr >= $highCr) {
+            if ($cr > $highCr) {
                 $highCr = $cr;
-                $winI = $i;
+                // Put $i as the only member of the high group
+                $highGroup = [$i];
+            } elseif ($cr == $highCr) {
+                // Add $i to the high group
+                $highGroup[] = $i;
             }
         }
         $weights = [];
         foreach ($visits as $i => $v) {
-            if ($i == $winI) {
-                $weights[] = 80000;
+            if (in_array($i, $highGroup)) {
+                $weights[] = 80000 / count($highGroup);
             } else {
-                $weights[] = 20000 / ($experiences - 1);
+                $weights[] = 20000 / ($experiences - count($highGroup));
             }
         }
            

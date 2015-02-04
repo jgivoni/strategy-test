@@ -31,6 +31,7 @@ class PeriodTest extends AbstractTest
             echo "\t\t\tRunning day " . ($day+1) . " of $days   \r";
             $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
             $weightingRules = $this->getAdjustedWeightingRules($results, $day);
+            $this->csv($weightingRules);
             $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n",
                 $day, $results->visits, $results->conversions, $results->revenue));
             foreach ($results->experiencesResults as $key => $e) {
@@ -44,6 +45,10 @@ class PeriodTest extends AbstractTest
             if ($weight > $bestWeight) {
                 $bestWeight = $weight;
                 $winnerKey = $key;
+            } elseif ($weight == $bestWeight) {
+                if ((float) mt_rand() / (float) mt_getrandmax() > 0.5) {
+                    $winnerKey = $key;
+                }
             }
         }
         $results->winner = $winnerKey;

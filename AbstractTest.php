@@ -22,5 +22,13 @@ abstract class AbstractTest
         fwrite($f, $message);
         fclose($f);
     }
+    
+    public function csv($row)
+    {
+        $filename = '/var/log/strategy-test/' . $this->_conditions->key . '.csv';
+        $f = fopen($filename, 'a');
+        fwrite($f, implode(',', $row) . "\n");
+        fclose($f);
+    }
 
 }

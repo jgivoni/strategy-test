@@ -101,7 +101,7 @@ class VisitTest extends AbstractTest
         $revenue = 0;
         // You can only have revenue if there is a conversion
         if ($conversion) {
-            $revenue = $this->bellNumber($experience->rpc / $experience->cr, 10);
+            $revenue = $this->bellNumber((float) $experience->rpc / (float) $experience->cr, (float) 10);
             if ($revenue < 0) {
                 $revenue = 0; // Just in case, though this means we could distort the real mean
             }

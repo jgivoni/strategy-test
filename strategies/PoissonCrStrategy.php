@@ -8,25 +8,22 @@
 
 require_once 'strategies/Strategy.php';
 
-class BanditCrStrategy extends Strategy
+class PoissonCrStrategy extends Strategy
 {
-    public $alpha = 1.5;
-    public $beta = 50;
-    
-    public $name = 'Binomial bandit on CR';
+    public $name = 'Poisson bandit on CR';
     
     public function getWeights($visits, $conversions, $xSales, $revenue)
     {
+        // Make sure there are no 0 visits, because it will break the poisson (integrate: a limit is missing)
+        $visits = array_map(function($n) {
+            return ($n == 0) ? 1 : $n;
+        }, $visits);
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .
             "successes=c(" . implode(',', $conversions) . "); " .
-            "best_binomial_bandit(successes,trials,$this->alpha,$this->beta)";
+            "best_poisson_bandit(successes,trials)";
         $r = new RAdapter();
         $weights = $r->execute($rCommand)[0];
-        if (round(array_sum($weights)*10) != 10) {
-            $strategy = new PoissonCrStrategy();
-            return $strategy->getWeights($visits, $conversions, $xSales, $revenue);
-        }
         return array_map(function($weight) {
             return (float) $weight * 10000;
         }, $weights);
