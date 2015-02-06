@@ -28,9 +28,16 @@ class PeriodTest extends AbstractTest
         $results = new PeriodTestResults($conditions->experiences);
         $weightingRules = $this->getInitialWeightingRules($conditions->experiences);
         for ($day = 0; $day < $days; $day++) {
-            echo "\t\t\tRunning day " . ($day+1) . " of $days   \r";
+            echo "\t\t\tRunning day " . ($day+1) . " of $days ({$this->_conditions->visitsPerDay} visits per day)   \r";
             $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
             $weightingRules = $this->getAdjustedWeightingRules($results, $day);
+            $winner = $this->_getWinnerKey($weightingRules);
+            if ($winner != $results->winner) {
+                $results->winner = $winner;
+                $results->daysToWinner = $day;
+            }
+            
+            // Logging
             $this->csv($weightingRules);
             $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n",
                 $day, $results->visits, $results->conversions, $results->revenue));
@@ -40,18 +47,7 @@ class PeriodTest extends AbstractTest
             }
             $this->log("-\n");
         }
-        $bestWeight = 0;
-        foreach ($weightingRules as $key => $weight) {
-            if ($weight > $bestWeight) {
-                $bestWeight = $weight;
-                $winnerKey = $key;
-            } elseif ($weight == $bestWeight) {
-                if ((float) mt_rand() / (float) mt_getrandmax() > 0.5) {
-                    $winnerKey = $key;
-                }
-            }
-        }
-        $results->winner = $winnerKey;
+        
         return $results;
     }
 
@@ -88,6 +84,28 @@ class PeriodTest extends AbstractTest
         }
         $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience);
         return array_combine(array_keys($results->experiencesResults), $weights);
+    }
+
+    /**
+     * Returns the experience key for the experience with the heights weight
+     * 
+     * @param array $weightingRules
+     * @return string
+     */
+    protected function _getWinnerKey($weightingRules)
+    {
+        $bestWeight = 0;
+        foreach ($weightingRules as $key => $weight) {
+            if ($weight > $bestWeight) {
+                $bestWeight = $weight;
+                $winnerKey = $key;
+            } elseif ($weight == $bestWeight) {
+                if ((float) mt_rand() / (float) mt_getrandmax() > 0.5) {
+                    $winnerKey = $key;
+                }
+            }
+        }
+        return $winnerKey;
     }
 
 }

@@ -63,6 +63,13 @@ class StrategyTestResults
     public $winnerCount = [];
     
     /**
+     * Total days to find a winner
+     * (Divide by iterations to find average)
+     * @var int
+     */
+    public $daysToWinner;
+    
+    /**
      * Adds the results for a single period to the strategy results
      * 
      * @param PeriodTestResults $results
@@ -74,6 +81,7 @@ class StrategyTestResults
                 $this->winnerCount[$key] = 0;
             }
         }
+        $this->daysToWinner += $results->daysToWinner;
         $this->simulations++;
         $this->revenue += $results->revenue;
         $this->conversions += $results->conversions;
@@ -105,6 +113,11 @@ class StrategyTestResults
     public function getAvgConversionsInclXSales()
     {
         return ((float) $this->conversions + (float) $this->xSales) / (float) $this->simulations;
+    }
+    
+    public function getAvgDaysToWinner()
+    {
+        return (float) $this->daysToWinner / (float) $this->simulations;
     }
     
     /**

@@ -46,6 +46,12 @@ class PeriodTestResults
      * @var string
      */
     public $winner;
+    
+    /**
+     * How many days did it take before the final winner had final majority?
+     * @var int
+     */
+    public $daysToWinner;
 
     /**
      * Initialises a new period test results

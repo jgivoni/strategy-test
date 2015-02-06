@@ -21,13 +21,13 @@ $conditions->experiences = [
     'D' => new Experience(0.042, 0.01, 1.25),
     'E' => new Experience(0.045, 0.01, 1.05),
 ];
-$conditions->daysPerPeriod = 90;
-$conditions->visitsPerDay = 1000;
+$conditions->daysPerPeriod = 60;
+$conditions->visitsPerDay = 250;
 $conditions->iterationsPerStrategy = 200;
 $strategies = [
-//    new MyCrStrategy,
-//    new PoissonCrStrategy,
-//    new BanditCrStrategy,
+    new MyCrStrategy,
+    new PoissonCrStrategy,
+    new BanditCrStrategy,
     new BanditRpcStrategy,
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {

@@ -44,6 +44,7 @@ class StrategyTest extends AbstractTest
         foreach ($results->winnerCount as $key => $count) {
             echo "Exp $key: $count wins\n";
         }
+        echo "Avg. days to find winner: " . number_format($results->getAvgDaysToWinner(), 1) . "\n";
 
         return $results;
     }
