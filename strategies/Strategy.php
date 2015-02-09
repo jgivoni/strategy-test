@@ -19,4 +19,8 @@ abstract class Strategy
      */
     abstract public function getWeights($visits, $conversions, $xSales, $revenue);
 
+    public function displayConfig()
+    {
+        return "";
+    }
 }

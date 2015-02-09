@@ -9,11 +9,27 @@ class BanditRpcStrategy extends Strategy
     
     public $name = 'Binomial bandit on RPC';
     
+    public $divisor = 50;
+    public $addSuccessesToTrials;
+    
+    public function __construct($divisor = null, $addSuccessesToTrials = true)
+    {
+        if (isset($divisor)) {
+            $this->divisor = $divisor;
+        }
+        $this->addSuccessesToTrials = $addSuccessesToTrials;
+    }
+    
     public function getWeights($visits, $conversions, $xSales, $revenue)
     {
         $revenueTransformed = array_map(function($rev){
-            return $rev / 30;
+            return number_format((float)$rev / (float)$this->divisor, 2);
         }, $revenue);
+        if ($this->addSuccessesToTrials) {
+            array_walk($visits, function(&$value, $key) use ($revenueTransformed) {
+                $value += ceil($revenueTransformed[$key]);
+            });
+        }
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .
             "successes=c(" . implode(',', $revenueTransformed) . "); " .
@@ -31,6 +47,11 @@ class BanditRpcStrategy extends Strategy
         return array_map(function($weight) {
             return (float) $weight * 10000;
         }, $weights);
+    }
+
+    public function displayConfig()
+    {
+        return "$this->divisor, " . (int) $this->addSuccessesToTrials . ", $this->alpha, $this->beta";
     }
 
 }

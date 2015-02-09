@@ -23,7 +23,7 @@ class StrategyTest extends AbstractTest
      */
     public function getResults(Strategy $strategy, $iterations)
     {
-        echo "Testing strategy: {$strategy->name}\n";
+        echo "Testing strategy: {$strategy->name} (" . $strategy->displayConfig() . ")\n";
         
         $conditions = new PeriodTestConditions($this->_conditions->key);
         $conditions->experiences = $this->_conditions->experiences;
