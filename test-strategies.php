@@ -23,15 +23,14 @@ $conditions->experiences = [
 ];
 $conditions->daysPerPeriod = 60;
 $conditions->visitsPerDay = 100;
-$conditions->iterationsPerStrategy = 200;
+$conditions->iterationsPerStrategy = 500;
 $strategies = [
 //    new MyCrStrategy,
 //    new PoissonCrStrategy,
 //    new BanditCrStrategy,
+//    new BanditRpcStrategy(15, 0),
     new BanditRpcStrategy(30, 0),
-    new BanditRpcStrategy(30, 1),
-    new BanditRpcStrategy(60, 0),
-    new BanditRpcStrategy(60, 1),
+//    new BanditRpcStrategy(60, 0),
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {
     unlink("/var/log/strategy-test/test1.txt");

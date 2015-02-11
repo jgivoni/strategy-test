@@ -23,7 +23,8 @@ class AbStrategy extends Strategy
     public function getWeights($visits, $conversions, $xSales, $revenue)
     {
         $experiences = count($visits);
-        return array_pad([], $experiences, 1);
+        $weight = (float) 10000 / (float) $experiences;
+        return array_pad([], $experiences, $weight);
     }
 
 }

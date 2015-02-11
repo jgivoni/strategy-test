@@ -39,9 +39,9 @@ class MyCrStrategy extends Strategy
         $weights = [];
         foreach ($visits as $i => $v) {
             if (in_array($i, $highGroup)) {
-                $weights[] = 80000 / count($highGroup);
+                $weights[] = 8001 / count($highGroup);
             } else {
-                $weights[] = 20000 / ($experiences - count($highGroup));
+                $weights[] = 1999 / ($experiences - count($highGroup));
             }
         }
            

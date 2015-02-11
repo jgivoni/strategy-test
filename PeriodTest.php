@@ -32,7 +32,7 @@ class PeriodTest extends AbstractTest
             $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
             $weightingRules = $this->getAdjustedWeightingRules($results, $day);
             $winner = $this->_getWinnerKey($weightingRules);
-            if ($winner != $results->winner) {
+            if (isset($winner) && $winner != $results->winner) {
                 $results->winner = $winner;
                 $results->daysToWinner = $day;
             }
@@ -48,6 +48,9 @@ class PeriodTest extends AbstractTest
             $this->log("-\n");
         }
         
+        if (!$results->daysToWinner) {
+            $results->daysToWinner = $days;
+        }
         return $results;
     }
 
@@ -94,15 +97,12 @@ class PeriodTest extends AbstractTest
      */
     protected function _getWinnerKey($weightingRules)
     {
-        $bestWeight = 0;
+        $winnerKey = null;
+        $bestWeight = 8000;
         foreach ($weightingRules as $key => $weight) {
             if ($weight > $bestWeight) {
                 $bestWeight = $weight;
                 $winnerKey = $key;
-            } elseif ($weight == $bestWeight) {
-                if ((float) mt_rand() / (float) mt_getrandmax() > 0.5) {
-                    $winnerKey = $key;
-                }
             }
         }
         return $winnerKey;

@@ -87,7 +87,9 @@ class StrategyTestResults
         $this->conversions += $results->conversions;
         $this->xSales += $results->xSales;
         $this->periodResults[] = $results->collapse();
-        $this->winnerCount[$results->winner]++;
+        if ($results->winner) {
+            $this->winnerCount[$results->winner]++;
+        }
         return $this;
     }
 
