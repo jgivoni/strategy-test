@@ -13,24 +13,25 @@ require_once 'strategies/BanditRpcStrategy.php';
 require_once 'StrategiesTest.php';
 require_once 'StrategiesTestConditions.php';
 
-$conditions = new StrategiesTestConditions('test1');
+$conditions = new StrategiesTestConditions('US,84006');
 $conditions->experiences = [
-    'A' => new Experience(0.030, 0.01, 1),
-    'B' => new Experience(0.033, 0.01, 1.1),
-    'C' => new Experience(0.039, 0.01, 1.2),
-    'D' => new Experience(0.042, 0.01, 1.25),
-    'E' => new Experience(0.045, 0.01, 1.05),
+    'A' => new Experience(0.3241, 0.01, 16.68),
+    'B' => new Experience(0.3422, 0.01, 17.62),
+    'C' => new Experience(0.2966, 0.01, 17.45),
+//    'D' => new Experience(0.042, 0.01, 1.25),
+//    'E' => new Experience(0.045, 0.01, 1.05),
 ];
 $conditions->daysPerPeriod = 60;
-$conditions->visitsPerDay = 100;
+$conditions->visitsPerDay = 50;
 $conditions->iterationsPerStrategy = 500;
 $strategies = [
 //    new MyCrStrategy,
 //    new PoissonCrStrategy,
+//    new AbStrategy,
 //    new BanditCrStrategy,
-//    new BanditRpcStrategy(15, 0),
-    new BanditRpcStrategy(30, 0),
-//    new BanditRpcStrategy(60, 0),
+    new BanditRpcStrategy(50, 0, 6.97, 14.14),
+    new BanditRpcStrategy(100, 0, 8.93, 45.18),
+//    new BanditRpcStrategy(30, 0, 3, 50),
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {
     unlink("/var/log/strategy-test/test1.txt");
