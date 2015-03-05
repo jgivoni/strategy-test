@@ -2,12 +2,12 @@
 
 require_once 'strategies/Strategy.php';
 
-class BanditRpcStrategy extends Strategy
+class BanditRpc2Strategy extends Strategy
 {
     public $alpha;
     public $beta;
     
-    public $name = 'Binomial bandit on RPC';
+    public $name = '2nd binomial bandit on CR/RPC';
     
     public $divisor = 50;
     public $addSuccessesToTrials;

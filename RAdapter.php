@@ -11,6 +11,7 @@ class RAdapter
     public function execute($command)
     {
         $output = [];
+        $status = null;
         exec("R -e '{$command}' --slave --vanilla", $output, $status);
         if (empty($status)) {
             // Each element in the output is a row of data
@@ -24,6 +25,8 @@ class RAdapter
             }, $output);
             return $rows;
         } else {
+            echo "R command failed:\n";
+            echo $command . "\n\n";
             return null;
         }
     }
