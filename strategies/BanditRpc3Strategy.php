@@ -2,12 +2,12 @@
 
 require_once 'strategies/Strategy.php';
 
-class BanditRpc2Strategy extends Strategy
+class BanditRpc3Strategy extends Strategy
 {
     public $alpha;
     public $beta;
     
-    public $name = '2nd binomial bandit on CR/RPC';
+    public $name = '3rd binomial bandit on CR/RPC';
     
     public $divisor = 50;
     
@@ -34,20 +34,9 @@ class BanditRpc2Strategy extends Strategy
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .
             "successes=c(" . implode(',', $revenueTransformed) . "); " .
-            "best_binomial_bandit(successes,trials,$this->alpha,$this->beta)";
+            "best_binomial_bandit_sim(successes,trials,$this->alpha,$this->beta)";
         $r = new RAdapter();
-        $weights = $r->execute($rCommand)[0];
-        if (!isset($weights) || round(array_sum($weights)*10) != 10) {
-            $rCommand = "library(bandit); " . 
-                "trials=c(" . implode(',', $visits) . "); " .
-                "successes=c(" . implode(',', $revenueTransformed) . "); " .
-                "best_poisson_bandit(successes,trials)";
-            $r = new RAdapter();
-            $weights = $r->execute($rCommand)[0];
-            if (!isset($weights)) {
-                $weights = array_pad([], count($visits), 10000 / count($visits));
-            }
-        }
+        $weights = $r->execute($rCommand, RAdapter::FORMAT_DATAFRAME)[0];
         return array_map(function($weight) {
             return (float) $weight * 10000;
         }, $weights);
