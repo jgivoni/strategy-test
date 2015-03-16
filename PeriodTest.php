@@ -15,43 +15,74 @@ require_once 'DayTestConditions.php';
  */
 class PeriodTest extends AbstractTest
 {
-    /**
+	protected $day = 0;
+	
+	protected $test;
+	
+	protected $periodResults;
+	
+	protected $weightingRules;
+
+	protected $pendingAdjustedWeightingRules = false;
+	
+	/**
      * Returns the results of the period test
      * @param int $days
      * @return PeriodTestResults
      */
     public function getResults($days)
     {
-        $conditions = new PeriodTestConditions($this->_conditions->key);
-        $conditions->experiences = $this->_conditions->experiences;
-        $test = new DayTest($conditions);
-        $results = new PeriodTestResults($conditions->experiences);
-        $weightingRules = $this->getInitialWeightingRules($conditions->experiences);
-        for ($day = 0; $day < $days; $day++) {
-            echo "\t\t\tRunning day " . ($day+1) . " of $days ({$this->_conditions->visitsPerDay} visits per day)   \r";
-            $results->addDayResults($test->getResults($weightingRules, $this->_conditions->visitsPerDay));
-            $weightingRules = $this->getAdjustedWeightingRules($results, $day);
-            $winner = $this->_getWinnerKey($weightingRules);
-            if (isset($winner) && $winner != $results->winner) {
-                $results->winner = $winner;
-                $results->daysToWinner = $day;
-            }
-            
-            // Logging
-            $this->csv($weightingRules);
-            $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n",
-                $day, $results->visits, $results->conversions, $results->revenue));
-            foreach ($results->experiencesResults as $key => $e) {
-                $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\tNew weight: %d \n",
-                    $e->visits, $e->conversions, $e->revenue, $weightingRules[$key]));
-            }
-            $this->log("-\n");
-        }
-        
-        if (!$results->daysToWinner) {
-            $results->daysToWinner = $days;
-        }
-        return $results;
+		if ($this->day < $days) {	
+			if (!$this->pendingAdjustedWeightingRules) {
+				if ($this->day == 0) {
+					$conditions = new PeriodTestConditions($this->_conditions->key);
+					$conditions->experiences = $this->_conditions->experiences;
+					$this->test = new DayTest($conditions);
+					$results = new PeriodTestResults($conditions->experiences);
+					$this->periodResults = $results;
+					$this->results = $results;
+					$weightingRules = $this->getInitialWeightingRules($conditions->experiences);
+					$this->weightingRules = $weightingRules;
+				} else {
+					$results = $this->periodResults;
+					$weightingRules = $this->weightingRules;
+				}
+			
+	            echo "\t\t\t\tRunning day " . ($this->day+1) . " of $days ({$this->_conditions->visitsPerDay} visits per day)   \r";
+		        $results->addDayResults($this->test->getResults($weightingRules, $this->_conditions->visitsPerDay));
+				$this->pendingAdjustedWeightingRules = true;
+			} else {
+				$results = $this->periodResults;
+				$weightingRules = $this->weightingRules;
+			}
+            $weightingRules = $this->getAdjustedWeightingRules($results);
+			if (isset($weightingRules)) {
+				$winner = $this->_getWinnerKey($weightingRules);
+				if (isset($winner) && $winner != $results->winner) {
+					$results->winner = $winner;
+					$results->daysToWinner = $this->day;
+				}
+
+				// Logging
+				$this->csv($weightingRules);
+				$this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n",
+					$this->day, $results->visits, $results->conversions, $results->revenue));
+				foreach ($results->experiencesResults as $key => $e) {
+					$this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\tNew weight: %d \n",
+						$e->visits, $e->conversions, $e->revenue, $weightingRules[$key]));
+				}
+				$this->log("-\n");
+
+				$this->day++;
+				$this->pendingAdjustedWeightingRules = false;
+			}
+        } else {
+			$results = $this->periodResults;
+			if (!$results->daysToWinner) {
+				$results->daysToWinner = $days;
+			}
+			return $results;
+		}
     }
 
     /**
@@ -73,20 +104,22 @@ class PeriodTest extends AbstractTest
      * 
      * @param PeriodTestResults $results
      */
-    protected function getAdjustedWeightingRules($results, $day)
+    protected function getAdjustedWeightingRules($results)
     {
-        $visitsPerExperience = [];
-        $conversionsPerExperience = [];
-        $xSalesPerExperience = [];
-        $revenuePerExperience = [];
-        foreach ($results->experiencesResults as $exRes) {
-            $visitsPerExperience[] = $exRes->visits;
-            $conversionsPerExperience[] = $exRes->conversions;
-            $xSalesPerExperience[] = $exRes->xSales;
-            $revenuePerExperience[] = $exRes->revenue;
-        }
-        $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience);
-        return array_combine(array_keys($results->experiencesResults), $weights);
+		$visitsPerExperience = [];
+		$conversionsPerExperience = [];
+		$xSalesPerExperience = [];
+		$revenuePerExperience = [];
+		foreach ($results->experiencesResults as $exRes) {
+			$visitsPerExperience[] = $exRes->visits;
+			$conversionsPerExperience[] = $exRes->conversions;
+			$xSalesPerExperience[] = $exRes->xSales;
+			$revenuePerExperience[] = $exRes->revenue;
+		}
+		$weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience);
+		if (isset($weights)) {
+	        return array_combine(array_keys($results->experiencesResults), $weights);
+		}
     }
 
     /**

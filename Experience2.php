@@ -58,10 +58,8 @@ class Experience2 extends Experience
         $this->trialValue = (float) $trial;
         $this->monthlyValue = (float) $amount;
         $this->rebills = (float) $rebills;
-        $rpc = $cr * $this->trialValue + 
-            $xscr * self::XSALES * $this->trialValue + 
-            $cr * $this->ur * $this->monthlyValue * $this->rebills +
-            $xscr * self::XSALES * $this->xur * $this->monthlyValue * $this->rebills;
+        $rpc = $cr * ($this->trialValue + $this->ur * $this->monthlyValue * $this->rebills) + 
+            $xscr * self::XSALES * ($this->trialValue + $this->xur * $this->monthlyValue * $this->rebills);
         parent::__construct($cr, $xscr, $rpc);
     }
 

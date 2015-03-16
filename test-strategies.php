@@ -12,29 +12,38 @@ require_once 'strategies/PoissonCrStrategy.php';
 require_once 'strategies/BanditRpcStrategy.php';
 require_once 'strategies/BanditRpc2Strategy.php';
 require_once 'strategies/BanditRpc3Strategy.php';
+require_once 'strategies/BanditRpcBulkStrategy.php';
 require_once 'StrategiesTest.php';
 require_once 'StrategiesTestConditions.php';
 require_once 'Experience2.php';
 
 $conditions = new StrategiesTestConditions('test1');
 $conditions->experiences = [
-    'A' => new Experience2(0.030, 0.010, 0.25, 0.1),
-    'B' => new Experience2(0.035, 0.010, 0.25, 0.1),
-    'C' => new Experience2(0.035, 0.005, 0.25, 0.1),
+	//3
+//	'A' => new Experience(0.3241, 0.010, 16.68),
+//	'B' => new Experience(0.3422, 0.010, 17.62),
+//	'C' => new Experience(0.2966, 0.010, 17.45),
+	//4
+    'A' => new Experience2(0.030, 0.10, 0.25, 0.25),
+    'B' => new Experience2(0.035, 0.10, 0.25, 0.25),
+    'C' => new Experience2(0.035, 0.02, 0.25, 0.25),
+
 //    'D' => new Experience(0.042, 0.01, 1.25),
 //    'E' => new Experience(0.045, 0.01, 1.05),
+	
 ];
 $conditions->daysPerPeriod = 90;
 $conditions->visitsPerDay = 100;
-$conditions->iterationsPerStrategy = 500;
+$conditions->iterationsPerStrategy = 1500;
 $strategies = [
 //    new MyCrStrategy,
 //    new PoissonCrStrategy,
 //    new AbStrategy,
 //    new BanditCrStrategy,
-    new BanditRpcStrategy(33, 0, 1, 1),
-    new BanditRpc2Strategy(33, 1, 1),
-    new BanditRpc3Strategy(33, 1, 1),
+//    new BanditRpcStrategy(33, 0, 1, 1),
+//    new BanditRpc2Strategy(33, 1, 1),
+//    new BanditRpc3Strategy(33, 1, 1),
+    new BanditRpcBulkStrategy(33, 4.05, 4.131818182),
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {
     unlink("/var/log/strategy-test/test1.txt");

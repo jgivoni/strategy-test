@@ -133,7 +133,7 @@ class StrategyTestResults
             return $results->revenue;
         }, $this->periodResults));
         $r = new RAdapter();
-        $this->revenueStdDev = $r->execute("values=c($revenueList); sd(values)")[0][0];
+        $this->revenueStdDev = $r->execute("values=c($revenueList);\n sd(values)")[0][0];
         
         // Calculate standard deviation of conversions
         $conversionsList = implode(',', array_map(function($results){
@@ -141,7 +141,7 @@ class StrategyTestResults
             return $results->conversions;
         }, $this->periodResults));
         $r = new RAdapter();
-        $this->conversionsStdDev = $r->execute("values=c($conversionsList); sd(values)")[0][0];
+        $this->conversionsStdDev = $r->execute("values=c($conversionsList);\n sd(values)")[0][0];
         
         return $this;
     }

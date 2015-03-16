@@ -10,6 +10,7 @@ require_once 'StrategyTestResults.php';
 require_once 'PeriodTest.php';
 require_once 'PeriodTestConditions.php';
 
+require_once 'Ophp/subway/SubwayQueue.php';
 /**
  * Test a strategy in a number of iterations
  */
@@ -29,12 +30,25 @@ class StrategyTest extends AbstractTest
         $conditions->experiences = $this->_conditions->experiences;
         $conditions->strategy = $strategy;
         $conditions->visitsPerDay = $this->_conditions->visitsPerDay;
-        $test = new PeriodTest($conditions);
+        
         $results = new StrategyTestResults();
+		$queue = new \Ophp\Subway\Queue;
         for ($iteration = 0; $iteration < $iterations; $iteration++) {
-            echo "Running test " . ($iteration+1) . " of $iterations   \r";
-            $results->addPeriodResults($test->getResults($this->_conditions->daysPerPeriod));
+            echo "Starting test " . ($iteration+1) . " of $iterations   \r";
+			$test = new PeriodTest($conditions);
+			$process = function() use ($results, $test) {
+	            $periodResults = $test->getResults($this->_conditions->daysPerPeriod);
+				if (isset($periodResults)) {
+		            $results->addPeriodResults($periodResults);
+					return true;
+				} else {
+					return false;
+				}
+			};
+			$queue->addProcess($process);
         }
+		$queue->execute();
+		
         $results->collapse();
         echo "\n";
         echo pl('Avg. total revenue', $results->getAvgRevenue(), $this->_conditions->getBaselineRevenue(), $this->_conditions->getOptimalRevenue());

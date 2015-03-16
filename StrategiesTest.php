@@ -27,9 +27,11 @@ class StrategiesTest extends AbstractTest
         $conditions->visitsPerDay = $this->_conditions->visitsPerDay;
         $conditions->daysPerPeriod = $this->_conditions->daysPerPeriod;
         $test = new StrategyTest($conditions);
+		$time = time();
+		echo date('Y-m-d H:i:s') . "\n";
         foreach ($strategies as $strategy) {
             $test->getResults($strategy, $this->_conditions->iterationsPerStrategy);
-            echo "-\n";
+            echo "-" . date('i\m-s\s', time() - $time) . "-\n";
         }
     }
 
