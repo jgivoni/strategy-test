@@ -22,7 +22,7 @@ class BanditRpcStrategy extends Strategy
         $this->beta = $beta;
     }
     
-    public function getWeights($visits, $conversions, $xSales, $revenue)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev)
     {
         $revenueTransformed = array_map(function($rev){
             return (float)$rev / (float)$this->divisor;

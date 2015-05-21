@@ -13,6 +13,7 @@ require_once 'strategies/BanditRpcStrategy.php';
 require_once 'strategies/BanditRpc2Strategy.php';
 require_once 'strategies/BanditRpc3Strategy.php';
 require_once 'strategies/BanditRpcBulkStrategy.php';
+require_once 'strategies/BanditEpcBulkStrategy.php';
 require_once 'StrategiesTest.php';
 require_once 'StrategiesTestConditions.php';
 require_once 'Experience2.php';
@@ -34,7 +35,7 @@ $conditions->experiences = [
 ];
 $conditions->daysPerPeriod = 90;
 $conditions->visitsPerDay = 100;
-$conditions->iterationsPerStrategy = 1500;
+$conditions->iterationsPerStrategy = 2;
 $strategies = [
 //    new MyCrStrategy,
 //    new PoissonCrStrategy,
@@ -43,6 +44,7 @@ $strategies = [
 //    new BanditRpcStrategy(33, 0, 1, 1),
 //    new BanditRpc2Strategy(33, 1, 1),
 //    new BanditRpc3Strategy(33, 1, 1),
+    new BanditEpcBulkStrategy(),
     new BanditRpcBulkStrategy(33, 4.05, 4.131818182),
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {

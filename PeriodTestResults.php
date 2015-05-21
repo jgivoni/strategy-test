@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Holds the results of a period test
  */
@@ -21,25 +15,31 @@ class PeriodTestResults
      * Total visits simulated for the period so far
      * @var int
      */
-    public $visits;
+    public $visits = 0;
 
     /**
-     * Total conversions for the day
+     * Total conversions for the period so far
      * @var int
      */
-    public $conversions;
+    public $conversions = 0;
 
     /**
-     * Total x-sales for the day
+     * Total x-sales for the period so far
      * @var int
      */
-    public $xSales;
+    public $xSales = 0;
 
     /**
-     * Total revenue for the day
+     * Total revenue for the period so far
      * @var float
      */
-    public $revenue;
+    public $revenue = 0;
+    
+    /**
+     * Standard deviation for the revenue
+     * @var float 
+     */
+    public $revStdDev;
     
     /**
      * Key of the winning experience by the end of the period
@@ -74,6 +74,15 @@ class PeriodTestResults
      */
     public function addDayResults(DayTestResults $results)
     {
+        if ($this->visits > 0) {
+            // Calculate the combined std dev
+            // This is the correct method:
+            // http://stats.stackexchange.com/questions/55999/is-it-possible-to-find-the-combined-standard-deviation
+            // But I'm using a simpler one which should be ok when the samples are taken from the same population
+            $this->revStdDev = sqrt($this->revStdDev^2*$this->visits + $results->revStdDev^2*$results->visits);
+        } else {
+            $this->revStdDev = $results->revStdDev;
+        }
         $this->visits += $results->visits;
         $this->revenue += $results->revenue;
         $this->conversions += $results->conversions;

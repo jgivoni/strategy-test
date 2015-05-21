@@ -6,8 +6,8 @@
  * and open the template in the editor.
  */
 
-abstract class Strategy
-{
+abstract class Strategy {
+
     /**
      * Set name in subtypes
      * @var string
@@ -17,10 +17,10 @@ abstract class Strategy
     /**
      * Returns the weights for each experience
      */
-    abstract public function getWeights($visits, $conversions, $xSales, $revenue);
+    abstract public function getWeights($visits, $conversions, $xSales, $revenue, $stdev);
 
-    public function displayConfig()
-    {
+    public function displayConfig() {
         return "";
     }
+
 }

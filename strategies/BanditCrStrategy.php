@@ -15,7 +15,7 @@ class BanditCrStrategy extends Strategy
     
     public $name = 'Binomial bandit on CR';
     
-    public function getWeights($visits, $conversions, $xSales, $revenue)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev)
     {
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .

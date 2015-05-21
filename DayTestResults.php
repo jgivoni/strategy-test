@@ -18,7 +18,7 @@ class DayTestResults
      * Total visits simulated for the day
      * @var int
      */
-    public $visits;
+    public $visits = 0;
 
     /**
      * Total conversions for the day
@@ -37,6 +37,12 @@ class DayTestResults
      * @var float
      */
     public $revenue;
+    
+    /**
+     * Standard deviation for the revenue
+     * @var float
+     */
+    public $revStdDev;
 
     /**
      * Initialises a new daily test results
@@ -59,10 +65,25 @@ class DayTestResults
      */
     public function addVisitResults(VisitTestResults $results)
     {
+        if ($this->visits > 0) {
+            // Calculate the new std dev incrementally
+            // @see: http://math.stackexchange.com/questions/102978/incremental-computation-of-standard-deviation
+            // sd1=sqrt((n-2)/(n-1)*sd0^2+1/n*(rev-epc0)^2)
+        
+            $mean = $this->getRpc(); // Previous mean
+            $n = $this->visits + 1; // Current observation count (min 2)
+            $sd = $this->revStdDev; // Previous standard deviation
+            $x = $results->revenue; // Current observation
+                
+            $this->revStdDev = sqrt(($n-2)/($n-1)*$sd^2 + 1/$n*($x-$mean)^2);
+        } else {
+            $this->revStdDev = 0;
+        }
         $this->visits++;
         $this->revenue += $results->revenue;
         $this->conversions += $results->conversion ? 1 : 0;
         $this->xSales += $results->xSales;
+        
         if (isset($this->experiencesResults[$results->experienceKey])) {
             $this->experiencesResults[$results->experienceKey]->addVisitResults($results);
         }
