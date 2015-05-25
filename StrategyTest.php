@@ -24,7 +24,7 @@ class StrategyTest extends AbstractTest {
      * @return StrategyTestResults
      */
     public function getResults(Strategy $strategy, $iterations) {
-        echo "Testing strategy: {$strategy->name} (" . $strategy->displayConfig() . ")\n";
+        $this->printHeader($strategy);
 
         $conditions = new PeriodTestConditions($this->_conditions->key);
         $conditions->experiences = $this->_conditions->experiences;
@@ -34,7 +34,8 @@ class StrategyTest extends AbstractTest {
         $results = new StrategyTestResults();
         $queue = new \Ophp\Subway\Queue;
         for ($iteration = 0; $iteration < $iterations; $iteration++) {
-            echo "Starting test " . ($iteration + 1) . " of $iterations   \r";
+            $this->printLapHeader($iteration, $iterations);
+            
             $test = new PeriodTest($conditions);
             $process = function() use ($results, $test) {
                 $periodResults = $test->getResults($this->_conditions->daysPerPeriod);
@@ -50,19 +51,43 @@ class StrategyTest extends AbstractTest {
         $queue->execute();
 
         $results->collapse();
+        
+        $this->printFooter($results);
+
+        return $results;
+    }
+    
+    protected function printHeader($strategy) {
+        echo "Testing strategy: {$strategy->name} (" . $strategy->displayConfig() . ")\n";
+    }
+    
+    protected function printLapHeader($iteration, $iterations) {
+        echo "Starting test " . ($iteration + 1) . " of $iterations   \r";
+    }
+    
+    /**
+     * 
+     * @param StrategyTestResults $results
+     */
+    protected function printFooter($results) {
         echo "\n";
         echo pl('Avg. total revenue', $results->getAvgRevenue(), $this->_conditions->getBaselineRevenue(), $this->_conditions->getOptimalRevenue());
         echo "Rev std dev: {$results->revenueStdDev}\n";
-        echo "EPC: " . number_format($results->getAvgRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 2) . "\n";
-        echo "Baseline EPC: " . number_format($this->_conditions->getBaselineRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 2) . "\n";
+        echo "EPC: " . number_format($results->getAvgRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 3) . "\n";
+        echo "Baseline EPC: " . number_format($this->_conditions->getBaselineRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 3) . "\n";
         echo pl('Avg. total conversions', $results->getAvgConversions(), $this->_conditions->getBaselineConversions(), $this->_conditions->getOptimalConversions());
         echo "Conversions variation: {$results->getConversionsVariation()}\n";
+        $finalTheoreticalEpc = 0; // Calculate what the epc should be according to the exposure of experiences
         foreach ($results->winnerCount as $key => $count) {
-            echo "Exp $key: $count wins\n";
+            $visitCount = $results->experiencesVisitCount[$key];
+            $exposureRate = (float) $visitCount/ (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod / (float) $results->simulations;
+            $exposurePercent = number_format(100 * $exposureRate, 1);
+            echo "Exp $key: $count wins, $visitCount exposures ($exposurePercent%)\n";
+            $finalTheoreticalEpc += $exposureRate * $this->_conditions->experiences[$key]->rpc;
         }
         echo "Avg. days to find winner: " . number_format($results->getAvgDaysToWinner(), 1) . "\n";
+        echo "Final theoretical epc: " . number_format($finalTheoreticalEpc, 3) . "\n";
 
-        return $results;
     }
 
 }

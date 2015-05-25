@@ -15,7 +15,7 @@ experiment = list()
 <? endforeach; ?>
 
 bandit <- function(visits, conversions, revenue, stdev) {
-  if (length(conversions[conversions<150]) > 0) {
+  if (length(conversions[conversions<2]) > 0) {
     # Optimize on conversions at the beginning
     m <- mean(conversions/visits)
     s <- m/3
@@ -26,16 +26,24 @@ bandit <- function(visits, conversions, revenue, stdev) {
     epc <- revenue/visits
     stdevEpc <- sqrt(stdev^2/visits)
 
-    ndraws <- 1000 # Number of simulations
+    ndraws <- 5000 # Number of simulations
     arms <- length(visits)
 
+    # Monte Carlo simulation!
     # rnorm(ndraws*arms, subtest$revenue/subtest$trials, subtest$msd) # Random numbers under the normal distribution
     # split(, (0:(ndraws*arms-1) %/% arms)) # Split into groups of arms
     # sapply(, function(x){return(which.max(x))}) # Return the index of the best arm for each group
     # table(c(1:arms, ))/(ndraws+arms) # Pad with 1 winner for each arm, and divide by number of groups to get winner percentage
     # weights <- as.vector() # Return weights as a vector
 
-    weights <- as.vector(table(c(1:arms, sapply(split(rnorm(ndraws*arms, epc, stdevEpc), (0:(ndraws*arms-1) %/% arms)), function(x){return(which.max(x))})))/(ndraws+arms))
+    if (length(epc[epc==0]) > 0) {
+        weights <- as.vector(table(c(1:arms, sapply(split(rnorm(ndraws*arms, epc, stdevEpc), (0:(ndraws*arms-1) %/% arms)), function(x){return(which.max(x))})))/(ndraws+arms))
+    } else {
+        b <- stdevEpc^2/epc
+        k <- epc/b
+        weights <- as.vector(table(c(1:arms, sapply(split(rgamma(ndraws*arms, shape = k, scale = b), (0:(ndraws*arms-1) %/% arms)), function(x){return(which.max(x))})))/(ndraws+arms))
+    }
+ 
   }
   subtest$weight <- weights
   return(weights)

@@ -21,6 +21,12 @@ class StrategyTestResults {
     public $periodResults = [];
 
     /**
+     * Array of count of visits for each experience - how many times was it shown?
+     * @var array of int
+     */
+    public $experiencesVisitCount = [];
+    
+    /**
      * Iterations simulated for the strategy
      * @var int
      */
@@ -75,11 +81,19 @@ class StrategyTestResults {
      * @param PeriodTestResults $results
      */
     public function addPeriodResults(PeriodTestResults $results) {
+        /* @var $e PeriodTestResults */
         if (empty($this->winnerCount)) {
             foreach ($results->experiencesResults as $key => $e) {
                 $this->winnerCount[$key] = 0;
             }
         }
+        foreach ($results->experiencesResults as $key => $e) {
+            if (!isset($this->experiencesVisitCount[$key])) {
+                $this->experiencesVisitCount[$key] = 0;
+            }
+            $this->experiencesVisitCount[$key] += $e->visits;
+        }
+
         $this->daysToWinner += $results->daysToWinner;
         $this->simulations++;
         $this->revenue += $results->revenue;
