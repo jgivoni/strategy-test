@@ -13,10 +13,7 @@ experiment = list()
 <? endforeach; ?>
 
 bbb <- function(successes, trials, alpha = 1, beta = 1) {
-  weights <- best_binomial_bandit(successes, trials, alpha, beta)
-  if (round(sum(weights),1) != 1) {
-    weights <- best_binomial_bandit_sim(successes, trials, alpha, beta)
-  }
+  weights <- best_binomial_bandit_sim(successes, trials, alpha, beta)
   return(weights)
 }
 

@@ -52,17 +52,23 @@ class PeriodTest extends AbstractTest {
             }
             $weightingRules = $this->getAdjustedWeightingRules($results);
             if (isset($weightingRules)) {
+                $this->weightingRules = $weightingRules;
                 $winner = $this->_getWinnerKey($weightingRules);
                 if (isset($winner) && $winner != $results->winner) {
                     $results->winner = $winner;
                     $results->daysToWinner = $this->day;
+                } else {
+                    $results->winner = null;
+                    $results->daysToWinner = null;
                 }
 
                 // Logging
                 $this->csv($weightingRules);
                 $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n", $this->day, $results->visits, $results->conversions, $results->revenue));
                 foreach ($results->experiencesResults as $key => $e) {
-                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\tNew weight: %d \n", $e->visits, $e->conversions, $e->revenue, $weightingRules[$key]));
+                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\t%6sepc New weight: %d \n", $e->visits, $e->conversions, $e->revenue, 
+                            number_format((float)$e->revenue / (float)$e->visits, 2),
+                            $weightingRules[$key]));
                 }
                 $this->log("-\n");
 
@@ -109,7 +115,7 @@ class PeriodTest extends AbstractTest {
             $revenuePerExperience[] = $exRes->revenue;
             $revStdDevPerExperience[] = $exRes->revStdDev;
         }
-        $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience);
+        $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience, $revStdDevPerExperience);
         if (isset($weights)) {
             return array_combine(array_keys($results->experiencesResults), $weights);
         }
@@ -123,7 +129,7 @@ class PeriodTest extends AbstractTest {
      */
     protected function _getWinnerKey($weightingRules) {
         $winnerKey = null;
-        $bestWeight = 8000;
+        $bestWeight = 9000;
         foreach ($weightingRules as $key => $weight) {
             if ($weight > $bestWeight) {
                 $bestWeight = $weight;

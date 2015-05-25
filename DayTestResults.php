@@ -71,11 +71,11 @@ class DayTestResults
             // sd1=sqrt((n-2)/(n-1)*sd0^2+1/n*(rev-epc0)^2)
         
             $mean = $this->getRpc(); // Previous mean
-            $n = $this->visits + 1; // Current observation count (min 2)
+            $n = (float) $this->visits + 1; // Current observation count (min 2)
             $sd = $this->revStdDev; // Previous standard deviation
-            $x = $results->revenue; // Current observation
+            $x = (float) $results->revenue; // Current observation
                 
-            $this->revStdDev = sqrt(($n-2)/($n-1)*$sd^2 + 1/$n*($x-$mean)^2);
+            $this->revStdDev = sqrt(($n-2)/($n-1)*pow($sd,2) + pow($x-$mean,2)/$n);
         } else {
             $this->revStdDev = 0;
         }

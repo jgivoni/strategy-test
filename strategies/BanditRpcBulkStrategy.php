@@ -66,13 +66,15 @@ class BanditRpcBulkStrategy extends Strategy {
         ob_start();
         include $this->rScript;
         $rScript = ob_get_clean();
-        echo $rScript;
-        die;
         $r = new RAdapter;
         $weights = $r->execute($rScript, RAdapter::FORMAT_CSV);
-        $this->weights = array_merge($this->weights, array_combine(array_keys($this->subtests), $weights));
-        $this->subtests = [];
-        $this->idleTime = 0;
+        if (isset($weights)) {
+            $this->weights = array_merge($this->weights, array_combine(array_keys($this->subtests), $weights));
+            $this->subtests = [];
+            $this->idleTime = 0;
+        } else {
+            die('process halted');
+        }
     }
 
 }

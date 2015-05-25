@@ -33,6 +33,7 @@ class BanditEpcBulkStrategy extends BanditRpcBulkStrategy
 
             $this->subtests[$hash] = [
                 'visits' => $visits,
+                'conversions' => $conversions,
                 'revenue' => $revenue,
                 'stdev' => $stdev,
             ];

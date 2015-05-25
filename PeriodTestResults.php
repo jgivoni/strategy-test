@@ -79,7 +79,7 @@ class PeriodTestResults
             // This is the correct method:
             // http://stats.stackexchange.com/questions/55999/is-it-possible-to-find-the-combined-standard-deviation
             // But I'm using a simpler one which should be ok when the samples are taken from the same population
-            $this->revStdDev = sqrt($this->revStdDev^2*$this->visits + $results->revStdDev^2*$results->visits);
+            $this->revStdDev = sqrt((pow($this->revStdDev,2)*$this->visits + pow($results->revStdDev,2)*$results->visits)/($this->visits + $results->visits));
         } else {
             $this->revStdDev = $results->revStdDev;
         }
