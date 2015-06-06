@@ -36,8 +36,8 @@ $conditions->experiences = [
 //    'E' => new Experience(0.045, 0.01, 1.05),
 	
 ];
-$conditions->daysPerPeriod = 60;
-$conditions->visitsPerDay = 250;
+$conditions->daysPerPeriod = 90;
+$conditions->visitsPerDay = 500;
 $conditions->iterationsPerStrategy = 1000;
 $strategies = [
 //    new MyCrStrategy,
@@ -48,6 +48,8 @@ $strategies = [
 //    new BanditRpc2Strategy(33, 1, 1),
 //    new BanditRpc3Strategy(33, 1, 1),
     new BanditEpcBulkStrategy(),
+//    new BanditRpcBulkStrategy(2),
+//    new BanditRpcBulkStrategy(10),
     new BanditRpcBulkStrategy(25),
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {

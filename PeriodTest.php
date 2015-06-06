@@ -63,13 +63,13 @@ class PeriodTest extends AbstractTest {
                 }
 
                 // Logging
-                $this->csv($weightingRules);
-                $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n", $this->day, $results->visits, $results->conversions, $results->revenue));
-                foreach ($results->experiencesResults as $key => $e) {
-                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\t%6sepc New weight: %d \n", $e->visits, $e->conversions, $e->revenue, 
-                            number_format((float)$e->revenue / (float)$e->visits, 2),
-                            $weightingRules[$key]));
-                }
+//                $this->csv($weightingRules);
+//                $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n", $this->day, $results->visits, $results->conversions, $results->revenue));
+//                foreach ($results->experiencesResults as $key => $e) {
+//                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\t%6sepc New weight: %d \n", $e->visits, $e->conversions, $e->revenue, 
+//                            number_format((float)$e->revenue / (float)$e->visits, 2),
+//                            $weightingRules[$key]));
+//                }
                 $this->log("-\n");
 
                 $this->day++;

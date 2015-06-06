@@ -80,7 +80,7 @@ class StrategyTest extends AbstractTest {
         $finalTheoreticalEpc = 0; // Calculate what the epc should be according to the exposure of experiences
         foreach ($results->winnerCount as $key => $count) {
             $visitCount = $results->experiencesVisitCount[$key];
-            $exposureRate = (float) $visitCount/ (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod / (float) $results->simulations;
+            $exposureRate = (float) $visitCount / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod / (float) $results->simulations;
             $exposurePercent = number_format(100 * $exposureRate, 1);
             echo "Exp $key: $count wins, $visitCount exposures ($exposurePercent%)\n";
             $finalTheoreticalEpc += $exposureRate * $this->_conditions->experiences[$key]->rpc;
