@@ -42,6 +42,12 @@ class PeriodTestResults
     public $revStdDev;
     
     /**
+     * Standard deviation for the revenue, only counting conversions
+     * @var float
+     */
+    public $revPerConvStdDev;
+    
+    /**
      * Key of the winning experience by the end of the period
      * @var string
      */
@@ -68,6 +74,21 @@ class PeriodTestResults
     }
 
     /**
+     * Returns the new standard deviation after adding another group/sample
+     * 
+     * @param int $n1 Sample size 1
+     * @param int $n2 Sample size 2
+     * @param float $sd1 Standard deviation sample 1
+     * @param float $sd2 Standard deviation sample 2
+     */
+    public function getPooledStdDev($n1, $n2, $sd1, $sd2) {
+        // This would be the correct method:
+        // http://stats.stackexchange.com/questions/55999/is-it-possible-to-find-the-combined-standard-deviation
+        // But I'm using a simpler one (pooled) which should be ok when the samples are taken from the same population
+        return sqrt((pow($sd1,2)*$n1 + pow($sd2,2)*$n2)/($n1 + $n2));
+    }
+    
+    /**
      * Adds the results for a single day to the period visits
      * 
      * @param DayTestResults $results
@@ -79,9 +100,14 @@ class PeriodTestResults
             // This is the correct method:
             // http://stats.stackexchange.com/questions/55999/is-it-possible-to-find-the-combined-standard-deviation
             // But I'm using a simpler one which should be ok when the samples are taken from the same population
-            $this->revStdDev = sqrt((pow($this->revStdDev,2)*$this->visits + pow($results->revStdDev,2)*$results->visits)/($this->visits + $results->visits));
+            $this->revStdDev = $this->getPooledStdDev($this->visits, $results->visits, $this->revStdDev, $results->revStdDev);
         } else {
             $this->revStdDev = $results->revStdDev;
+        }
+        if ($this->conversions > 0) {
+            $this->revPerConvStdDev = $this->getPooledStdDev($this->conversions, $results->conversions, $this->revPerConvStdDev, $results->revPerConvStdDev);
+        } else {
+            $this->revPerConvStdDev = $results->revPerConvStdDev;
         }
         $this->visits += $results->visits;
         $this->revenue += $results->revenue;

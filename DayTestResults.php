@@ -24,7 +24,7 @@ class DayTestResults
      * Total conversions for the day
      * @var int
      */
-    public $conversions;
+    public $conversions = 0;
 
     /**
      * Total x-sales for the day
@@ -45,6 +45,12 @@ class DayTestResults
     public $revStdDev;
 
     /**
+     * Standard deviation for the revenue, only counting conversions
+     * @var float
+     */
+    public $revPerConvStdDev;
+    
+    /**
      * Initialises a new daily test results
      * 
      * Prepares the array of subresults per experience
@@ -59,6 +65,23 @@ class DayTestResults
     }
 
     /**
+     * Returns the new standard deviation after receiving one more obvervation
+     * 
+     * Calculate the new std dev incrementally
+     * @see: http://math.stackexchange.com/questions/102978/incremental-computation-of-standard-deviation
+     * sd1=sqrt((n-2)/(n-1)*sd0^2+1/n*(rev-epc0)^2)
+     * 
+     * @param float $mean Previous mean
+     * @param int $n New observation count
+     * @param float $sd Previous standard deviation
+     * @param float $x New observation value
+     * @return float
+     */
+    public function getNewStdDev($mean, $n, $sd, $x) {
+        return sqrt(($n-2)/($n-1)*pow($sd,2) + pow($x-$mean,2)/$n);
+    }
+
+    /**
      * Adds the results for a single visit to the daily visits
      * 
      * @param VisitTestResults $results
@@ -66,19 +89,21 @@ class DayTestResults
     public function addVisitResults(VisitTestResults $results)
     {
         if ($this->visits > 0) {
-            // Calculate the new std dev incrementally
-            // @see: http://math.stackexchange.com/questions/102978/incremental-computation-of-standard-deviation
-            // sd1=sqrt((n-2)/(n-1)*sd0^2+1/n*(rev-epc0)^2)
         
             $mean = $this->getRpc(); // Previous mean
             $n = (float) $this->visits + 1; // Current observation count (min 2)
-            $sd = $this->revStdDev; // Previous standard deviation
+            $sd = (float) $this->revStdDev; // Previous standard deviation
             $x = (float) $results->revenue; // Current observation
                 
-            $this->revStdDev = sqrt(($n-2)/($n-1)*pow($sd,2) + pow($x-$mean,2)/$n);
-        } else {
-            $this->revStdDev = 0;
-        }
+            $this->revStdDev = $this->getNewStdDev($mean, $n, $sd, $x);
+        } 
+        if ($this->conversions > 0 && $results->conversion) {
+            $mean = (float) $this->revenue / (float) $this->conversions;
+            $n = (float) $this->conversions + 1;
+            $sd = (float) $this->revPerConvStdDev;
+            $x = (float) $results->revenue; // Current observation
+            $this->revPerConvStdDev = $this->getNewStdDev($mean, $n, $sd, $x);
+        } 
         $this->visits++;
         $this->revenue += $results->revenue;
         $this->conversions += $results->conversion ? 1 : 0;

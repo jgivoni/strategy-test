@@ -20,7 +20,7 @@ class MyCrStrategy extends Strategy
      * @param array $revenue Of float per experience
      * @return array Of int/float per experience
      */
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev)
     {
         $experiences = count($visits);
         $highGroup = [];

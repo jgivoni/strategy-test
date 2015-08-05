@@ -1,5 +1,5 @@
 
-# Bulk best normal bandit on epc script
+# Bulk best hybrid (beta+gamma) bandit on epc script
 
 library(bandit)
 experiment = list()
@@ -37,9 +37,9 @@ bandit <- function(visits, conversions, revenue, stdev, revPerConvStdev) {
 
   revPerConv <- revenue/conversions
   #epc <- revenue/visits
-  arms <- length(visits)
+    arms <- length(visits)
     
-    pooled_sd <- sqrt(sum(revPerConvStdev^2*(conversions+1))/(sum(conversions)-arms))
+    pooled_sd <- sqrt(sum(revPerConvStdev^2*(conversions-1))/(sum(conversions)-arms))
     sdMean <- sqrt(pooled_sd^2/(conversions-1))
 
     ndraws <- 5000 # Number of simulations

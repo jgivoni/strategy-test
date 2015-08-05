@@ -3,15 +3,20 @@
 require_once 'strategies/BanditRpcBulkStrategy.php';
 
 /**
- * Calculates the weights in bulk using revenue per visit and standard deviation of revenue
+ * Continuous reward bandit by Victor
  * 
- * The r-script uses a simulation under a hybrid beta-gamma distribution
+ * The r-script uses a distribution function called sim_post_gaussian
  */
-class BanditEpcBulkStrategy extends BanditRpcBulkStrategy
+class BanditEpcVictorBulkStrategy extends BanditRpcBulkStrategy
 {
-    public $name = 'Bulk hybrid bandit on EPC';
-    protected $rScript = 'bulk-bandit-epc-hybrid.r';
+    public $name = 'Continuous reward bandit (1)';
+    protected $rScript = 'bulk-bandit-continuous-reward.r';
      
+    public function __construct()
+    {
+        
+    }
+
     public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev)
     {
         $hash = md5(serialize($visits) .

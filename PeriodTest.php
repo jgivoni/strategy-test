@@ -63,13 +63,13 @@ class PeriodTest extends AbstractTest {
                 }
 
                 // Logging
-//                $this->csv($weightingRules);
-//                $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n", $this->day, $results->visits, $results->conversions, $results->revenue));
-//                foreach ($results->experiencesResults as $key => $e) {
-//                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\t%6sepc New weight: %d \n", $e->visits, $e->conversions, $e->revenue, 
-//                            number_format((float)$e->revenue / (float)$e->visits, 2),
-//                            $weightingRules[$key]));
-//                }
+                $this->csv($weightingRules);
+                $this->log(sprintf("Day %d:\t\t%6dv\t%6dc\t%6dr\n", $this->day, $results->visits, $results->conversions, $results->revenue));
+                foreach ($results->experiencesResults as $key => $e) {
+                    $this->log(sprintf("Experience $key:\t%6dv\t%6dc\t%6dr\t%6sepc New weight: %d \n", $e->visits, $e->conversions, $e->revenue, 
+                            number_format((float)$e->revenue / (float)$e->visits, 2),
+                            $weightingRules[$key]));
+                }
                 $this->log("-\n");
 
                 $this->day++;
@@ -108,14 +108,18 @@ class PeriodTest extends AbstractTest {
         $xSalesPerExperience = [];
         $revenuePerExperience = [];
         $revStdDevPerExperience = [];
+        $revPerConvStdDevPerExperience = []; 
         foreach ($results->experiencesResults as $exRes) {
+            /* @var $exRes PeriodTestResults */
             $visitsPerExperience[] = $exRes->visits;
             $conversionsPerExperience[] = $exRes->conversions;
             $xSalesPerExperience[] = $exRes->xSales;
             $revenuePerExperience[] = $exRes->revenue;
             $revStdDevPerExperience[] = $exRes->revStdDev;
+            $revPerConvStdDevPerExperience[] = (float) $exRes->revPerConvStdDev;
         }
-        $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, $xSalesPerExperience, $revenuePerExperience, $revStdDevPerExperience);
+        $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, 
+                $xSalesPerExperience, $revenuePerExperience, $revStdDevPerExperience, $revPerConvStdDevPerExperience);
         if (isset($weights)) {
             return array_combine(array_keys($results->experiencesResults), $weights);
         }
