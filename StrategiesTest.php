@@ -59,8 +59,9 @@ class StrategiesTest extends AbstractTest {
     }
     
     protected function printFooter() {
+        echo "Comparing mean revenue for best and worst strategy:\n";
         echo "Z-score: " . $this->results->getZScore() . "\n";
-        echo "P-value: " . (1 - $this->results->getPValue()) . "\n";
-        echo "Confidence: " . $this->results->getPValue()*100 . "%\n";
+        echo "P-value: " . $this->results->getPValue() . "\n";
+        echo "Confidence: " . (1-$this->results->getPValue())*100 . "%\n";
     }
 }

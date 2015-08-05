@@ -36,6 +36,12 @@ class PeriodTestResults
     public $revenue = 0;
     
     /**
+     * Total sum of squared revenue per visit
+     * Used to calculate variance/standard deviation later
+     */
+    public $sumSqRev = 0;
+            
+    /**
      * Standard deviation for the revenue
      * @var float 
      */
@@ -111,6 +117,7 @@ class PeriodTestResults
         }
         $this->visits += $results->visits;
         $this->revenue += $results->revenue;
+        $this->sumSqRev += $results->sumSqRev;
         $this->conversions += $results->conversions;
         $this->xSales += $results->xSales;
         foreach ($results->experiencesResults as $key => $subresults) {

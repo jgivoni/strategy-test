@@ -30,14 +30,20 @@ class DayTestResults
      * Total x-sales for the day
      * @var int
      */
-    public $xSales;
+    public $xSales = 0;
 
     /**
      * Total revenue for the day
      * @var float
      */
-    public $revenue;
+    public $revenue = 0;
     
+    /**
+     * Total sum of squared revenue per visit
+     * Used to calculate variance/standard deviation later
+     */
+    public $sumSqRev = 0;
+            
     /**
      * Standard deviation for the revenue
      * @var float
@@ -106,6 +112,7 @@ class DayTestResults
         } 
         $this->visits++;
         $this->revenue += $results->revenue;
+        $this->sumSqRev += pow($results->revenue, 2);
         $this->conversions += $results->conversion ? 1 : 0;
         $this->xSales += $results->xSales;
         

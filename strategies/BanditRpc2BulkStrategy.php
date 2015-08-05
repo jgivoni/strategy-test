@@ -24,7 +24,7 @@ class BanditRpc2BulkStrategy extends Strategy
         $this->relStd = $relStd;
     }
     
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
     {
 		$hash = md5(serialize($visits) . 
 			"-" . serialize($conversions) . 

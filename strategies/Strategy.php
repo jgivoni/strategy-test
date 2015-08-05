@@ -17,7 +17,7 @@ abstract class Strategy {
     /**
      * Returns the weights for each experience
      */
-    abstract public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev);
+    abstract public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev);
 
     public function displayConfig() {
         return "";

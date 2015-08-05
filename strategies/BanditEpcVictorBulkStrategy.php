@@ -17,12 +17,13 @@ class BanditEpcVictorBulkStrategy extends BanditRpcBulkStrategy
         
     }
 
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
     {
         $hash = md5(serialize($visits) .
             "-" . serialize($conversions) .
             "-" . serialize($xSales) .
             "-" . serialize($revenue) .
+            "-" . serialize($sumSqRev) .
             "-" . serialize($stdev)) .
             "-" . serialize($revPerConvStdev);
 
@@ -36,6 +37,7 @@ class BanditEpcVictorBulkStrategy extends BanditRpcBulkStrategy
                 'visits' => $visits,
                 'conversions' => $conversions,
                 'revenue' => $revenue,
+                'sumSqRev' => $sumSqRev,
                 'stdev' => $stdev,
                 'revPerConvStdev' => $revPerConvStdev,
             ];

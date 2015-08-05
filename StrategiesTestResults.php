@@ -70,11 +70,14 @@ class StrategiesTestResults {
         return $z;
     }
 
-
+    /**
+     * Returns the P value for the differece between the best and the worst strategy
+     * @return float
+     */
     public function getPValue() {
         $z = $this->getZScore();
         $r = new RAdapter();
-        $p = $r->execute("pnorm($z)")[0][0];
-        return $p;
+        $p = $r->execute("pnorm($z)")[0][0]; // Two tailed
+        return (1 - $p) * 2;
     }
 }

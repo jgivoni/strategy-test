@@ -12,7 +12,7 @@ class PoissonCrStrategy extends Strategy
 {
     public $name = 'Poisson bandit on CR';
     
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
     {
         // Make sure there are no 0 visits, because it will break the poisson (integrate: a limit is missing)
         $visits = array_map(function($n) {
