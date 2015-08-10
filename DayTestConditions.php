@@ -24,6 +24,19 @@ class DayTestConditions extends VisitTestConditions
 
         return $rpcSum / count($this->experiences);
     }
+    
+    /**
+     * Returns the theoretical epc of the optimal experience
+     */
+    public function getOptimalRpc()
+    {
+        $rpc = [];
+        foreach ($this->experiences as $e) {
+            $rpc[] = $e->rpc;
+        }
+
+        return max($rpc);
+    }
 
     public function getBaselineCr()
     {

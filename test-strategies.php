@@ -37,9 +37,9 @@ $conditions->experiences = [
 //    'E' => new Experience(0.045, 0.01, 1.05),
 	
 ];
-$conditions->daysPerPeriod = 30;
-$conditions->visitsPerDay = 100;
-$conditions->iterationsPerStrategy = 100;
+$conditions->daysPerPeriod = 90;
+$conditions->visitsPerDay = 250;
+$conditions->iterationsPerStrategy = 1000;
 $strategies = [
 //    new MyCrStrategy,
 //    new PoissonCrStrategy,
@@ -48,12 +48,13 @@ $strategies = [
 //    new BanditRpcStrategy(33, 0, 1, 1),
 //    new BanditRpc2Strategy(33, 1, 1),
 //    new BanditRpc3Strategy(33, 1, 1),
-//    new BanditEpcBulkStrategy(),
-    new BanditEpcVictorBulkStrategy(), // Continuous reward bandit, v1
-    new BanditRpcBulkStrategy(75,1,1), // What we use currently in production
+    new BanditEpcBulkStrategy(),
+    new BanditEpcVictorBulkStrategy(), // Continuous reward bandit, v2
+//    new BanditRpcBulkStrategy(75,1,1), // What we use currently in production
 //    new BanditRpcBulkStrategy(2),
 //    new BanditRpcBulkStrategy(10),
-//    new BanditRpcBulkStrategy(25), // Best so far (uses priors, alpha+beta)
+    new BanditRpcBulkStrategy(25), // Best so far (uses priors, alpha+beta)
+//    new BanditRpcBulkStrategy(25,3,100), // Experimenting with priors
 ];
 if (file_exists("/var/log/strategy-test/test1.txt")) {
     unlink("/var/log/strategy-test/test1.txt");

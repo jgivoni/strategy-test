@@ -12,11 +12,9 @@ experiment = list()
 	visits <- c(<?= implode(',', $subtest['visits']) ?>)
 	conversions <- c(<?= implode(',', $subtest['conversions']) ?>)
 	revenue <- c(<?= implode(',', $subtest['revenue']) ?>)
-        stdev <- c(<?= implode(',', $subtest['stdev']) ?>)
         sumSqRev <- c(<?= implode(',', $subtest['sumSqRev']) ?>)
-        revPerConvStdev <- c(<?= implode(',', $subtest['revPerConvStdev']) ?>)
 	subtest <- list(visits = visits, conversions = conversions, revenue = revenue, 
-            sumSqRev = sumSqRev, stdev = stdev, revPerConvStdev = revPerConvStdev)
+            sumSqRev = sumSqRev)
 	experiment <- c(experiment, list(subtest))
 
 <? endforeach; ?>
@@ -48,12 +46,11 @@ best_gaussian_bandit_sim<-function (sum.revenues,sum.squared.revenues, n, mu0=0.
 }
 #end functions
 
-bandit <- function(visits, conversions, revenue, stdev, revPerConvStdev, sumSqRev) {
+bandit <- function(visits, conversions, revenue, sumSqRev) {
     weights <- best_gaussian_bandit_sim(revenue, sumSqRev, visits)
     subtest$weight <- weights
     return(weights)
 }
 
-weights = sapply(experiment, function(subtest) bandit(subtest$visits, subtest$conversions, subtest$revenue, 
-    subtest$stdev, subtest$revPerConvStdev, subtest$sumSqRev)*10000)
+weights = sapply(experiment, function(subtest) bandit(subtest$visits, subtest$conversions, subtest$revenue, subtest$sumSqRev)*10000)
 write.table(t(weights), col.names = FALSE, row.names = FALSE)

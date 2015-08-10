@@ -12,14 +12,13 @@ class BanditEpcBulkStrategy extends BanditRpcBulkStrategy
     public $name = 'Bulk hybrid bandit on EPC';
     protected $rScript = 'bulk-bandit-epc-hybrid.r';
      
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $sumSqRev)
     {
         $hash = md5(serialize($visits) .
             "-" . serialize($conversions) .
             "-" . serialize($xSales) .
             "-" . serialize($revenue) .
-            "-" . serialize($stdev)) .
-            "-" . serialize($revPerConvStdev);
+            "-" . serialize($sumSqRev));
 
         if (isset($this->weights[$hash])) {
             $weights = $this->weights[$hash];
@@ -31,8 +30,7 @@ class BanditEpcBulkStrategy extends BanditRpcBulkStrategy
                 'visits' => $visits,
                 'conversions' => $conversions,
                 'revenue' => $revenue,
-                'stdev' => $stdev,
-                'revPerConvStdev' => $revPerConvStdev,
+                'sumSqRev' => $sumSqRev,
             ];
         } else {
             $this->idleTime++;

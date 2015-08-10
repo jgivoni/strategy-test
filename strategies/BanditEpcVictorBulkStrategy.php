@@ -17,15 +17,13 @@ class BanditEpcVictorBulkStrategy extends BanditRpcBulkStrategy
         
     }
 
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $sumSqRev)
     {
         $hash = md5(serialize($visits) .
             "-" . serialize($conversions) .
             "-" . serialize($xSales) .
             "-" . serialize($revenue) .
-            "-" . serialize($sumSqRev) .
-            "-" . serialize($stdev)) .
-            "-" . serialize($revPerConvStdev);
+            "-" . serialize($sumSqRev));
 
         if (isset($this->weights[$hash])) {
             $weights = $this->weights[$hash];
@@ -38,8 +36,6 @@ class BanditEpcVictorBulkStrategy extends BanditRpcBulkStrategy
                 'conversions' => $conversions,
                 'revenue' => $revenue,
                 'sumSqRev' => $sumSqRev,
-                'stdev' => $stdev,
-                'revPerConvStdev' => $revPerConvStdev,
             ];
         } else {
             $this->idleTime++;

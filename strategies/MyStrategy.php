@@ -20,7 +20,7 @@ class MyStrategy extends Strategy
      * @param array $revenue Of float per experience
      * @return array Of int/float per experience
      */
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $sumSqRev)
     {
         $experiences = count($visits);
         $highCr = 0;

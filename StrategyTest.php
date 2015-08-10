@@ -18,6 +18,12 @@ require_once 'Ophp/subway/SubwayQueue.php';
 class StrategyTest extends AbstractTest {
 
     /**
+     *
+     * @var StrategyTestConditions
+     */
+    protected $_conditions;
+    
+    /**
      * Returns the results of the strategy test
      * @param Strategy $strategy
      * @param int $iterations
@@ -70,13 +76,9 @@ class StrategyTest extends AbstractTest {
      * @param StrategyTestResults $results
      */
     protected function printFooter($results) {
+        $baselineEpc = $this->_conditions->getBaselineRpc();
+        $optimalEpc = $this->_conditions->getOptimalRpc();
         echo "\n";
-        echo pl('Avg. total revenue', $results->getAvgRevenue(), $this->_conditions->getBaselineRevenue(), $this->_conditions->getOptimalRevenue());
-        echo "Rev std dev: {$results->revenueStdDev}\n";
-        echo "EPC: " . number_format($results->getAvgRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 3) . "\n";
-        echo "Baseline EPC: " . number_format($this->_conditions->getBaselineRevenue() / (float) $this->_conditions->visitsPerDay / (float) $this->_conditions->daysPerPeriod, 3) . "\n";
-        echo pl('Avg. total conversions', $results->getAvgConversions(), $this->_conditions->getBaselineConversions(), $this->_conditions->getOptimalConversions());
-        echo "Conversions variation: {$results->getConversionsVariation()}\n";
         $finalTheoreticalEpc = 0; // Calculate what the epc should be according to the exposure of experiences
         foreach ($results->winnerCount as $key => $count) {
             $visitCount = $results->experiencesVisitCount[$key];
@@ -86,8 +88,12 @@ class StrategyTest extends AbstractTest {
             $finalTheoreticalEpc += $exposureRate * $this->_conditions->experiences[$key]->rpc;
         }
         echo "Avg. days to find winner: " . number_format($results->getAvgDaysToWinner(), 1) . "\n";
-        echo "Final theoretical epc: " . number_format($finalTheoreticalEpc, 3) . "\n";
-
+        echo "Theoretical baseline EPC: " . number_format($baselineEpc, 3) . " (even weight)\n";
+        echo "Theoretical optimal EPC: " . number_format($optimalEpc, 3) . " (best experience)\n";
+        echo "Theoretical actual EPC: " . number_format($finalTheoreticalEpc, 3) . " (actual exposure)\n";
+        echo "Theoretical lift: " . number_format(100*($finalTheoreticalEpc - $baselineEpc)/$baselineEpc, 2) . "% (over baseline)\n";
+        echo "Caliber: " . number_format(100*($finalTheoreticalEpc - $baselineEpc)/($optimalEpc - $baselineEpc), 0) . "% (of optimal)\n";
+        echo "Regret: " . number_format(100-100*($finalTheoreticalEpc - $baselineEpc)/($optimalEpc - $baselineEpc), 0) . "% (lost revenue compared to baseline)\n";
     }
 
 }

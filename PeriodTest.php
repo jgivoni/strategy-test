@@ -107,8 +107,6 @@ class PeriodTest extends AbstractTest {
         $conversionsPerExperience = [];
         $xSalesPerExperience = [];
         $revenuePerExperience = [];
-        $revStdDevPerExperience = [];
-        $revPerConvStdDevPerExperience = []; 
         $sumSqRev = [];
         foreach ($results->experiencesResults as $exRes) {
             /* @var $exRes PeriodTestResults */
@@ -116,13 +114,10 @@ class PeriodTest extends AbstractTest {
             $conversionsPerExperience[] = $exRes->conversions;
             $xSalesPerExperience[] = $exRes->xSales;
             $revenuePerExperience[] = $exRes->revenue;
-            $revStdDevPerExperience[] = $exRes->revStdDev;
-            $revPerConvStdDevPerExperience[] = (float) $exRes->revPerConvStdDev;
             $sumSqRev[] = $exRes->sumSqRev;
         }
         $weights = $this->_conditions->strategy->getWeights($visitsPerExperience, $conversionsPerExperience, 
-                $xSalesPerExperience, $revenuePerExperience, $revStdDevPerExperience, $revPerConvStdDevPerExperience,
-                $sumSqRev);
+                $xSalesPerExperience, $revenuePerExperience, $sumSqRev);
         if (isset($weights)) {
             return array_combine(array_keys($results->experiencesResults), $weights);
         }

@@ -8,15 +8,13 @@ experiment = list()
 	visits <- c(<?= implode(',', $subtest['visits']) ?>)
 	conversions <- c(<?= implode(',', $subtest['conversions']) ?>)
 	revenue <- c(<?= implode(',', $subtest['revenue']) ?>)
-        stdev <- c(<?= implode(',', $subtest['stdev']) ?>)
-        revPerConvStdev <- c(<?= implode(',', $subtest['revPerConvStdev']) ?>)
-	subtest <- list(visits = visits, conversions = conversions, revenue = revenue, stdev = stdev, 
-            revPerConvStdev = revPerConvStdev)
+        sumSqRev <- c(<?= implode(',', $subtest['sumSqRev']) ?>)
+	subtest <- list(visits = visits, conversions = conversions, revenue = revenue, sumSqRev = sumSqRev)
 	experiment <- c(experiment, list(subtest))
 
 <? endforeach; ?>
 
-bandit <- function(visits, conversions, revenue, stdev, revPerConvStdev) {
+bandit <- function(visits, conversions, revenue, sumSqRev) {
   # estimate the priors
   priorConversions <- 30 # Number of conversions per arm to estimate prior
   sumConversions <- sum(conversions)
@@ -26,27 +24,27 @@ bandit <- function(visits, conversions, revenue, stdev, revPerConvStdev) {
   priorConversions <- sumConversions * priorRatio
 
   # Hardcoded to improve results
-  priorVisits <- 1000
-  priorRevenue <- 750
-  priorConversions <- 30
+    priorVisits <- 1000
+    priorRevenue <- 750
+    priorConversions <- 30
+    #priorSumSqRev <- priorRevenue^2/5
 
-  # adjust for priors
-  visits <- visits + priorVisits
-  conversions <- conversions + priorConversions
-  revenue <- revenue + priorRevenue
+    # adjust for priors
+    r <- max(1 - visits / priorVisits, 0) # The ratio of primed observations to use (0-1)
+    visits <- visits + priorVisits * r
+    conversions <- conversions + priorConversions * r
+    revenue <- revenue + priorRevenue * r
+    sumSqRev <- sumSqRev + (priorRevenue * r)^2/5
 
-  revPerConv <- revenue/conversions
-  #epc <- revenue/visits
+    revPerConv <- revenue/conversions
+    sdRpc <- sqrt((sumSqRev-revPerConv^2*conversions)/(conversions-1)^2) # standard deviation of revenue per signup
+
     arms <- length(visits)
-    
-    pooled_sd <- sqrt(sum(revPerConvStdev^2*(conversions-1))/(sum(conversions)-arms))
-    sdMean <- sqrt(pooled_sd^2/(conversions-1))
-
-    ndraws <- 5000 # Number of simulations
+    ndraws <- 2000 # Number of simulations
 
     alpha <- conversions + 1
     beta <- visits - conversions + 1
-    b <- sdMean^2/revPerConv
+    b <- sdRpc^2/revPerConv
     k <- revPerConv/b
     weights <- as.vector(table(c(1:arms, sapply(split(
         rbeta(ndraws*arms, alpha, beta) *
@@ -57,6 +55,5 @@ bandit <- function(visits, conversions, revenue, stdev, revPerConvStdev) {
   return(weights)
 }
 
-weights = sapply(experiment, function(subtest) bandit(subtest$visits, subtest$conversions, subtest$revenue, 
-    subtest$stdev, subtest$revPerConvStdev)*10000)
+weights = sapply(experiment, function(subtest) bandit(subtest$visits, subtest$conversions, subtest$revenue, subtest$sumSqRev)*10000)
 write.table(t(weights), col.names = FALSE, row.names = FALSE)

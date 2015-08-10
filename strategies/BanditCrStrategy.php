@@ -15,7 +15,7 @@ class BanditCrStrategy extends Strategy
     
     public $name = 'Binomial bandit on CR';
     
-    public function getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev)
+    public function getWeights($visits, $conversions, $xSales, $revenue, $sumSqRev)
     {
         $rCommand = "library(bandit); " . 
             "trials=c(" . implode(',', $visits) . "); " .
@@ -25,7 +25,7 @@ class BanditCrStrategy extends Strategy
         $weights = $r->execute($rCommand)[0];
         if (round(array_sum($weights)*10) != 10) {
             $strategy = new PoissonCrStrategy();
-            return $strategy->getWeights($visits, $conversions, $xSales, $revenue, $stdev, $revPerConvStdev, $sumSqRev);
+            return $strategy->getWeights($visits, $conversions, $xSales, $revenue, $sumSqRev);
         }
         return array_map(function($weight) {
             return (float) $weight * 10000;
