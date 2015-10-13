@@ -93,7 +93,7 @@ class StrategyTest extends AbstractTest {
         echo "Theoretical actual EPC: " . number_format($finalTheoreticalEpc, 3) . " (actual exposure)\n";
         echo "Theoretical lift: " . number_format(100*($finalTheoreticalEpc - $baselineEpc)/$baselineEpc, 2) . "% (over baseline)\n";
         echo "Caliber: " . number_format(100*($finalTheoreticalEpc - $baselineEpc)/($optimalEpc - $baselineEpc), 0) . "% (of optimal)\n";
-        echo "Regret: " . number_format(100-100*($finalTheoreticalEpc - $baselineEpc)/($optimalEpc - $baselineEpc), 0) . "% (lost revenue compared to baseline)\n";
+        echo "Regret: " . number_format(100*($optimalEpc - $finalTheoreticalEpc)/($optimalEpc), 0) . "% (lost revenue)\n";
     }
 
 }

@@ -20,7 +20,7 @@ experiment = list()
 <? endforeach; ?>
 
 # Functions provided by Victor in "Continuous reward bandit.r"
-sim_post_gaussian<-function (sum.revenues,sum.squared.revenues, n, mu0=0.5,nu0=100,alpha0 = 50, beta0 = 10000, ndraws = 5000) {
+sim_post_gaussian<-function (sum.revenues, sum.squared.revenues, n, mu0, nu0, alpha0, beta0, ndraws = 5000) {
     k <- length(sum.revenues)
     ans <- matrix(nrow = ndraws, ncol = k)
     mu1<-(nu0*mu0+sum.revenues)/(nu0+n)
@@ -41,7 +41,7 @@ prob_winner_gaussian<-function (post){
     return(w/sum(w))
 }
 
-best_gaussian_bandit_sim<-function (sum.revenues,sum.squared.revenues, n, mu0=0.5,nu0=100,alpha0 = 50, beta0 = 10000, ndraws = 5000) {
+best_gaussian_bandit_sim<-function (sum.revenues,sum.squared.revenues, n, mu0=3,nu0=10,alpha0 = 100, beta0 = 10000, ndraws = 5000) {
     return(prob_winner_gaussian(sim_post_gaussian(sum.revenues, sum.squared.revenues, n, mu0, nu0, alpha0, beta0, ndraws)))
 }
 #end functions

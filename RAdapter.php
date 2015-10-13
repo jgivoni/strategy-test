@@ -6,26 +6,25 @@
  * and open the template in the editor.
  */
 
-class RAdapter
-{
+class RAdapter {
+
     const FORMAT_VECTOR = 1;
     const FORMAT_DATAFRAME = 2;
     const FORMAT_CSV = 3;
-    
-    public function execute($command, $outputFormat = self::FORMAT_VECTOR)
-    {
+
+    public function execute($command, $outputFormat = self::FORMAT_VECTOR) {
         $output = [];
         $status = null;
-		if (strpos($command, "\n") === false) {
-			// Single line command
-	        exec("R -e '{$command}' --slave --vanilla", $output, $status);
-		} else {
-			// Multiple line script
-			$tmpRScript = sys_get_temp_dir() . '/' . uniqid() . '.r';
-			file_put_contents($tmpRScript, $command);
-			exec("R -f '{$tmpRScript}' --slave --vanilla", $output, $status);
-			unlink($tmpRScript);
-		}
+        if (strpos($command, "\n") === false) {
+            // Single line command
+            exec("R -e '{$command}' --slave --vanilla", $output, $status);
+        } else {
+            // Multiple line script
+            $tmpRScript = sys_get_temp_dir() . '/' . uniqid() . '.r';
+            file_put_contents($tmpRScript, $command);
+            exec("R -f '{$tmpRScript}' --slave --vanilla", $output, $status);
+            unlink($tmpRScript);
+        }
         if (empty($status)) {
             if ($outputFormat == self::FORMAT_VECTOR) {
                 // Output is a vector (what is the line lenght?)
@@ -50,7 +49,7 @@ class RAdapter
                 }, $output);
                 return $rows;
             } elseif ($outputFormat == self::FORMAT_CSV) {
-				$rows = array_map(function($line) {
+                $rows = array_map(function($line) {
                     $columns = explode(' ', $line);
                     // Convert to floats
                     return array_map(function($column) {
@@ -58,9 +57,9 @@ class RAdapter
                     }, $columns);
                 }, $output);
                 return $rows;
-			} else {
-				return $output;
-			}
+            } else {
+                return $output;
+            }
         } else {
             echo "R command failed:\n";
             echo $command . "\n\n";
